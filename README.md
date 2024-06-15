@@ -7,6 +7,7 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2406.07529-blue.svg)](https://arxiv.org/abs/2406.07529)
 
 [Lu Li†](https://sites.google.com/view/meetluli/home), [Tianyu Zhang†](https://ai.t-zhang.com), [Zhiqi Bu†](https://sites.google.com/view/zhiqi-bu), Suyuchen Wang, Huan He, Jie Fu, Yonghui Wu, Jiang Bian, Yong Chen, Yoshua Bengio
+
 † Equal contribution
 
 ## Code
