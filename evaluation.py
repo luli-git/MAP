@@ -1,21 +1,21 @@
 import os
-import sys
+
 
 import json
 import tqdm
-from concurrent.futures import ProcessPoolExecutor
 
 import torch
 import torch.nn as nn
 from src import utils
-from src.datasets.common import get_dataloader, maybe_dictionarize
-from src.heads import get_classification_head
-from src.modeling import ImageClassifier
+from task_vectors.src.datasets.common import get_dataloader, maybe_dictionarize
+from task_vectors.src.heads import get_classification_head
+from task_vectors.src.modeling import ImageClassifier
 from abc import ABC, abstractmethod
 
-from src.datasets.registry import get_dataset
-from merge import get_merged_model
+from task_vectors.src.datasets.registry import get_dataset
+from merge import get_merged_model, get_merged_model_from_vectors
 from utils import read_config
+import numpy as np
 
 
 class AbstractEvaluator(ABC):
@@ -119,10 +119,12 @@ class ZeroShotEvaluator(AbstractEvaluator):
         else:
             print("Results not saved (to do so, specify results_path in args).")
 
-    def save_results_incrementally(self, index, result):
+    def save_results_incrementally(self, index, result, eval_dataset=None):
         """
         Updates the results file with the new result in the desired format.
         """
+        if eval_dataset is None:
+            eval_dataset = ""
         names = "_".join(self.args.zeroshot_merge_models)
         results_file_path = os.path.join(
             self.args.results_path,
@@ -131,10 +133,11 @@ class ZeroShotEvaluator(AbstractEvaluator):
         if not os.path.exists(os.path.dirname(results_file_path)):
             os.makedirs(os.path.dirname(results_file_path), exist_ok=True)
         # Read existing results
-        file_name = os.path.join(
-            results_file_path,
-            f"{names}scaling_results.json",
-        )
+        if eval_dataset:
+            file_name = f"{names}{eval_dataset}scaling_results.json"
+        else:
+            file_name = f"{names}scaling_results.json"
+        file_name = os.path.join(results_file_path, file_name)
         if os.path.exists(file_name):
             with open(file_name, "r") as f:
                 try:
@@ -148,6 +151,8 @@ class ZeroShotEvaluator(AbstractEvaluator):
         results[index] = result
 
         # Write the updated results back to the file
+        if not os.path.exists(os.path.dirname(file_name)):
+            os.makedirs(os.path.dirname(file_name), exist_ok=True)
         with open(file_name, "w") as f:
             json.dump(results, f, indent=4)
 
@@ -156,6 +161,34 @@ def save_results_to_json(results, filename):
     with open(filename, "w") as f:
         json.dump(results, f, indent=4)
     print(f"Results have been saved to {filename}")
+
+
+def evaluate_scalings_single(
+    scalings, eval_dataset, task_vectors, pretrained_model, args, start=0
+):
+    scaling_coefficients_results = {}
+    for index, scaling in enumerate(scalings):
+        image_encoder = get_merged_model_from_vectors(
+            task_vectors, pretrained_model, scaling
+        )
+        evaluator = ZeroShotEvaluator(image_encoder, args)
+        eval_results = evaluator.eval_single_dataset(eval_dataset)
+        if isinstance(scaling, np.ndarray):
+            scaling = scaling.tolist()
+        models_info = {
+            ds: scale for ds, scale in zip(args.zeroshot_merge_models, scaling)
+        }
+        scaling_coefficients_results[str(index + start)] = {
+            "evals": {eval_dataset: eval_results},
+            "models": models_info,
+        }
+        if args.results_path:
+            evaluator.save_results_incrementally(
+                str(index + start),
+                scaling_coefficients_results[str(index + start)],
+                eval_dataset=eval_dataset,
+            )
+    return scaling_coefficients_results
 
 
 def evaluate_scalings(scalings, args):
@@ -172,6 +205,8 @@ def evaluate_scalings(scalings, args):
     if args.results_path:
         if not os.path.exists(os.path.join(args.results_path, args.exp_id)):
             os.makedirs(os.path.join(args.results_path, args.exp_id), exist_ok=True)
+    else:
+        print("Results not saved (to do so, specify results_path in args).")
     for index, scaling in enumerate(scalings):
         image_encoder = get_merged_model(
             args.pretrained_checkpoint, finetune_checkpoints, scaling
@@ -190,8 +225,6 @@ def evaluate_scalings(scalings, args):
                 str(index), {"evals": eval_results, "models": models_info}
             )
 
-    else:
-        print("Results not saved (to do so, specify results_path in args).")
     return scaling_coefficients_results
 
 
@@ -252,7 +285,7 @@ def evaluate_scalings_nested(scalings, args, merge_dict):
             evaluator.save_results_incrementally(
                 index,
                 {
-                    "evals": eval_results,
+                    "evals": weighted_eval_results,
                     "raw_evals": eval_results,
                     "models": models_info,
                 },

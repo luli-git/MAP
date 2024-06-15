@@ -206,7 +206,13 @@ def find_pareto_front(
     return res
 
 
-def fit_quadratic_functions(config, activation, scaling_coefficients_results=None):
+def fit_quadratic_functions(
+    config,
+    activation,
+    scaling_coefficients_results=None,
+    dimension=None,
+    single_dimension=False,
+):
     names = "_".join(config.zeroshot_merge_models)
     if scaling_coefficients_results is None:
         scaling_coefficients_results = load_json_data(
@@ -222,8 +228,8 @@ def fit_quadratic_functions(config, activation, scaling_coefficients_results=Non
     X, y = prepare_scaling(scaling_coefficients_results), prepare_metric(
         scaling_coefficients_results, "accuracy"
     )
-
-    dimension = len(scaling_coefficients_results["0"]["models"])
+    if dimension is None:
+        dimension = len(scaling_coefficients_results["0"]["models"])
     params, error_encountered = [], False
 
     for i in range(dimension):
@@ -239,10 +245,13 @@ def fit_quadratic_functions(config, activation, scaling_coefficients_results=Non
             print(
                 f"An unexpected error occurred in processing {config.eval_datasets[i]}: {e}"
             )
-    # save the params
-    # to list of list
+        if single_dimension:
+            break
+
     params = [list(p) for p in params]
     if not error_encountered:
+        if not os.path.exists(os.path.join(config.results_path, config.exp_id)):
+            os.makedirs(os.path.join(config.results_path, config.exp_id))
         with open(
             os.path.join(config.results_path, config.exp_id, f"{names}_params.json"),
             "w",
@@ -354,7 +363,9 @@ def bayesian_pipeline(
         assert set(prior_dist.keys()) == set(
             score_dist.keys()
         ), "The keys of prior_dist and score_dist should be the same"
-        assert sum(prior_dist.values()) == 1, "The sum of prior_dist values should be 1"
+        assert (
+            abs(sum(prior_dist.values()) - 1) < 1e-5
+        ), "The sum of the values of prior_dist should be 1"
         posterior_dist = score_dist
     realization_dict = sample_keys(posterior_dist, points_to_sample)
     list_cartesian_points = []
@@ -394,9 +405,7 @@ def bayesian_compute_score_per_bin(
     if activation is None:
         activation = lambda x: x
     assert len(data.shape) == 2, "Data should be 2D"
-    assert (
-        data.shape[1] == nb_task
-    ), "Data should have the same number of tasks as the number of tasks"
+    # assert data.shape[1] == nb_task, "data.shape[1] should equal to the number of tasks"
     # Step 1: Transform the data to hyperspherical coordinates
     phi, r = batch_cartesian_to_hyperspherical(data)
     prediction = quadratic_model_func(data.T, params, activation=activation)
@@ -448,7 +457,7 @@ def get_scaling_metric_pairs(scaling_coefficients_eval, metric_type):
         scaling = []
         for dataset in eval_and_model["evals"].keys():
             metric.append(eval_and_model["evals"][dataset][metric_type])
-            scaling.append(eval_and_model["models"][dataset])
+            scaling.append(list(eval_and_model["models"].values()))
         metrics.append(metric)
-        scalings.append(scaling)
+        scalings.extend(scaling)
     return np.array(metrics), np.array(scalings)

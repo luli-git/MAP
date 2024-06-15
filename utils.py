@@ -58,10 +58,6 @@ def save_pf(pareto_points, pareto_decision_variables, args):
 
 def load_pf(loading_path):
     dict_ = load_json_data(loading_path)
-    converted_back_dict = {
-        tuple(map(int, key.strip("[]").split(", "))): value
-        for key, value in dict_.items()
-    }
 
     pareto_decision_variables = np.array(list(dict_.keys()))
     pareto_points = np.array(list(dict_.values()))
@@ -72,7 +68,6 @@ def prepare_scaling(json_data):
     prepared_data = []
     for index, details in json_data.items():
         model_vals = details["models"]
-        evals = details["evals"]
         row = []
         for key, val in model_vals.items():
             row.append(val)
@@ -371,14 +366,6 @@ def flip_true_values(array, percentage=20):
     array[indices_to_flip] = False
 
     return array
-
-
-def batch_cartesian_to_hyperspherical(x):
-    r = np.linalg.norm(x, axis=1)  # Compute the magnitude for each point
-    squares = np.square(x)
-    cumulative_sums = np.cumsum(squares[:, ::-1], axis=1)[:, ::-1]
-    phi = np.arctan2(np.sqrt(cumulative_sums[:, 1:]), x[:, :-1])
-    return phi, r
 
 
 def sample_theta_uniformly(middles, delta, k):

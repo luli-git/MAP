@@ -106,9 +106,19 @@ def parse_arguments():
     parser.add_argument(
         "--results-path",
         type=str,
-        default="MAP_results",
+        default="nested_experiments4",
         help="Directory for storing results, including pareto front, evaluation results for scalings, etc",
     )
+    parser.add_argument(
+        "--num-task", type=int, default=2, help="Number of tasks to process"
+    )
+    parser.add_argument(
+        "--model-name", type=str, default=2, help="Number of tasks to process"
+    )
+    parser.add_argument(
+        "--point", type=str, default=2, help="Number of tasks to process"
+    )
+    parser.add_argument("--models", type=str)
     parser.add_argument(
         "--metric-type",
         type=str,
@@ -137,11 +147,28 @@ def parse_arguments():
         "--preference",
         type=str,
         help="A list of strings to process. Usage: --eval-datasets MNIST CIFAR10",
-        default="MAP/configs/preference.yaml",
+        default="example_preference.yaml",
     )
-    parser.add_argument("--bayes-num-pts-to-sample-each-iter", type=int)
-    parser.add_argument("--bayes-initial-num-points", type=int)
 
+    parser.add_argument(
+        "--method",
+        type=str,
+        help="whether you want to run MAP (map), MAP with nested merging (nested), or MAP with Bayesian updates (bayesian)",
+        default="nested",
+    )
+    parser.add_argument(
+        "--bayes-iter", type=int, help="Number of iterations for Bayesian updates"
+    )
+    parser.add_argument(
+        "--bayes-update-pts",
+        type=int,
+        help="Number of points to update in Bayesian updates",
+    )
+    parser.add_argument(
+        "--bayes-initial-pts",
+        type=int,
+        help="Number of initial points to sample in Bayesian updates",
+    )
     # parser.add_argument('model', type=str, default="ViT-B-32")
     parsed_args = parser.parse_args()
     parsed_args.device = "cuda" if torch.cuda.is_available() else "cpu"
