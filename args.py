@@ -110,15 +110,8 @@ def parse_arguments():
         help="Directory for storing results, including pareto front, evaluation results for scalings, etc",
     )
     parser.add_argument(
-        "--num-task", type=int, default=2, help="Number of tasks to process"
+        "--point", type=str, default=2, help="Number of points to use for fitting the quadratic surrogate model."
     )
-    parser.add_argument(
-        "--model-name", type=str, default=2, help="Number of tasks to process"
-    )
-    parser.add_argument(
-        "--point", type=str, default=2, help="Number of tasks to process"
-    )
-    parser.add_argument("--models", type=str)
     parser.add_argument(
         "--metric-type",
         type=str,
