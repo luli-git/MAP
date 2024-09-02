@@ -52,23 +52,32 @@ The full list of arguments for `run_map.py` is as follows:
 * --`bayes-iter`: Number of iterations for Bayesian updates.
 * --`bayes-update-pts`: Number of points to update in Bayesian updates.
 * --`bayes-initial-pts`: Number of initial points to sample in Bayesian updates.
-# Example Pareto fronts obtained by MAP and solutions obtained by baseline methods 
-<table>
-  <tr>
-    <td>
-      <img src="img/DTDVal_CarsVal_withbaselines.png" alt="dtd_cars" style="width: 320px;">
-      <br>
-    </td>
-    <td>
-      <img src="img/SUN397Val_CarsVal_withbaselines.png" alt="sun_cars" style="width: 320px;">
-      <br>
-    </td>
-    <td>
-      <img src="img/SUN397Val_DTDVal_withbaselines.png" alt="sun_dtd" style="width: 320px;">
-      <br>
-    </td>
-  </tr>
-</table>
+
+
+
+### Example run for the 8-task nested merging
+
+```bash
+  python MAP/run_MAP.py \
+    --zeroshot-merge-models SUN397Val CarsVal DTDVal SVHNVal EuroSATVal GTSRBVal RESISC45Val \
+    --zeroshot-eval-datasets SUN397Val CarsVal DTDVal SVHNVal EuroSATVal GTSRBVal RESISC45Val \
+    --preference example_preferece.yaml \
+    --results-path nested_experiments8
+```
+
+```yaml
+# Example of the example_preferece.yaml
+{
+    "SUN397Val": 1,
+    "CarsVal": 2,
+    "DTDVal": 6,
+    "SVHNVal": 5,
+    "EuroSATVal": 4,
+    "GTSRBVal": 3,
+    "RESISC45Val": 7
+}
+```
+
 
 # Overview
 
@@ -91,7 +100,26 @@ Figure (c) shows an example of the Pareto Front. Pareto front (Grid search) is r
 
 
 # Examples
-## Nested merging
+
+### Example Pareto fronts obtained by MAP and solutions obtained by baseline methods 
+<table>
+  <tr>
+    <td>
+      <img src="img/DTDVal_CarsVal_withbaselines.png" alt="dtd_cars" style="width: 320px;">
+      <br>
+    </td>
+    <td>
+      <img src="img/SUN397Val_CarsVal_withbaselines.png" alt="sun_cars" style="width: 320px;">
+      <br>
+    </td>
+    <td>
+      <img src="img/SUN397Val_DTDVal_withbaselines.png" alt="sun_dtd" style="width: 320px;">
+      <br>
+    </td>
+  </tr>
+</table>
+
+### Nested merging
 
 Given a preference weights vector `[a,b,c,d]`. In the following example, it is the `example_preferece.yaml` file. 
 
@@ -120,30 +148,6 @@ Given a preference weights vector `[a,b,c,d]`. In the following example, it is t
     </td>
   </tr>
 </table>
-
-### Run the 8-task nested merging
-
-```bash
-  python MAP/run_MAP.py \
-    --zeroshot-merge-models SUN397Val CarsVal DTDVal SVHNVal EuroSATVal GTSRBVal RESISC45Val \
-    --zeroshot-eval-datasets SUN397Val CarsVal DTDVal SVHNVal EuroSATVal GTSRBVal RESISC45Val \
-    --preference example_preferece.yaml \
-    --results-path nested_experiments8
-```
-
-```yaml
-# Example of the example_preferece.yaml
-{
-    "SUN397Val": 1,
-    "CarsVal": 2,
-    "DTDVal": 6,
-    "SVHNVal": 5,
-    "EuroSATVal": 4,
-    "GTSRBVal": 3,
-    "RESISC45Val": 7
-}
-```
-
 
 # Citation
 If you find MAP useful for your research and applications, please cite using this BibTeX:
