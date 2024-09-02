@@ -110,3 +110,15 @@ Given a preference weights vector `[a,b,c,d]`. In the following example, it is t
     "RESISC45Val": 7
 }
 ```
+
+
+# Citation
+If you find MAP useful for your research and applications, please cite using this BibTeX:
+```bibtex
+@article{li2024map,
+  title={MAP: Low-compute Model Merging with Amortized Pareto Fronts via Quadratic Approximation},
+  author={Li, Lu and Zhang, Tianyu and Bu, Zhiqi and Wang, Suyuchen and He, Huan and Fu, Jie and Wu, Yonghui and Bian, Jiang and Chen, Yong and Bengio, Yoshua},
+  journal={arXiv preprint arXiv:2406.07529},
+  year={2024}
+}
+```
