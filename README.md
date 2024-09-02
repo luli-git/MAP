@@ -21,37 +21,37 @@ python run_MAP.py # check the args.py for the hyperparameters and choose one of 
 ```
 The full list of arguments for `run_map.py` is as follows:
 #### Task arithmetic configs    
-* --data-location: The root directory for the datasets. Default is "/data".
-* --eval-datasets: Which datasets to use for evaluation. Split by comma, e.g., "MNIST,EuroSAT".
-* --train-dataset: Which dataset(s) to patch on. Also comma-separated.
-* --exp_name: Name of the experiment, for organization purposes only.
-* --results-db: Where to store the results. If not specified, results are not stored.
-* --model: The type of model (e.g., RN50, ViT-B-32). Default is "ViT-B-32".
-* --batch-size: Batch size for training. Default is 128.
-* --lr: Learning rate. Default is 0.001.
-* --wd: Weight decay. Default is 0.1.
-* --ls: Label smoothing. Default is 0.0.
-* --warmup_length: Length of the learning rate warmup. Default is 500.
-* --epochs: Number of training epochs. Default is 10.
-* --load: Optionally load classifiers. Can be multiple, comma-separated.
-* --save: Path to optionally save a classifier. Default is "/checkpoints/ViT-B-32".
-* --cache-dir: Directory for caching features and encoder.
+* --`data-location`: The root directory for the datasets. Default is "/data".
+* --`eval-datasets`: Which datasets to use for evaluation. Split by comma, e.g., "MNIST,EuroSAT".
+* --`train-dataset`: Which dataset(s) to patch on. Also comma-separated.
+* --`exp_name`: Name of the experiment, for organization purposes only.
+* --`results-db`: Where to store the results. If not specified, results are not stored.
+* --`model`: The type of model (e.g., RN50, ViT-B-32). Default is "ViT-B-32".
+* --`batch-size`: Batch size for training. Default is 128.
+* --`lr`: Learning rate. Default is 0.001.
+* --`wd`: Weight decay. Default is 0.1.
+* --`ls`: Label smoothing. Default is 0.0.
+* --`warmup_length`: Length of the learning rate warmup. Default is 500.
+* --`epochsv: Number of training epochs. Default is 10.
+* --`load`: Optionally load classifiers. Can be multiple, comma-separated.
+* --`save`: Path to optionally save a classifier. Default is "/checkpoints/ViT-B-32".
+* --`cache-dir`: Directory for caching features and encoder.
 #### Map configs    
-* --method: Specifies the method to run: "map", "nested", or "bayesian". Default is "nested".
-* --pretrained-checkpoint: Path for pretrained backbone checkpoint. Default is "/checkpoints/ViT-B-32/zeroshot.pt".
-* --openclip-cachedir: Directory for caching models from OpenCLIP. Default is ".cache/open_clip".
-* --results-path: Directory for storing results.
-* --point: Number of points to use for fitting the quadratic surrogate function.
-* --metric-type: Metric to use for evaluation. Default is "accuracy".
-* --exp-id: Experiment ID for logging. Default is a hexadecimal timestamp.
-* --zeroshot-eval-datasets: List of datasets for zero-shot evaluation. Default is ["SUN397Val", "CarsVal", "DTDVal", "SVHNVal"]. Input can be like "SUN397Val CarsVal DTDVal SVHNVal"
-* --zeroshot-merge-models: List of models to merge for zero-shot evaluation. Default is the same as zeroshot-eval-datasets. 
+* --`method`: Specifies the method to run: "map", "nested", or "bayesian". Default is "nested".
+* --`pretrained-checkpoint`: Path for pretrained backbone checkpoint. Default is "/checkpoints/ViT-B-32/zeroshot.pt".
+* --`openclip-cachedir`: Directory for caching models from OpenCLIP. Default is ".cache/open_clip".
+* --`results-path`: Directory for storing results.
+* --`point`: Number of points to use for fitting the quadratic surrogate function.
+* --`metric-type`: Metric to use for evaluation. Default is "accuracy".
+* --`exp-id`: Experiment ID for logging. Default is a hexadecimal timestamp.
+* --`zeroshot-eval-datasets`: List of datasets for zero-shot evaluation. Default is ["SUN397Val", "CarsVal", "DTDVal", "SVHNVal"]. Input can be like "SUN397Val CarsVal DTDVal SVHNVal"
+* --`zeroshot-merge-models`: List of models to merge for zero-shot evaluation. Default is the same as zeroshot-eval-datasets. 
 ##### (for method == "nested" only) 
-* --preference: Path to a preference YAML file. Default is "example_preference.yaml".
+* --`preference`: Path to a preference YAML file. Default is "example_preference.yaml".
 ##### (for method == "bayesian" only)
-* --bayes-iter: Number of iterations for Bayesian updates.
-* --bayes-update-pts: Number of points to update in Bayesian updates.
-* --bayes-initial-pts: Number of initial points to sample in Bayesian updates.
+* --`bayes-iter`: Number of iterations for Bayesian updates.
+* --`bayes-update-pts`: Number of points to update in Bayesian updates.
+* --`bayes-initial-pts`: Number of initial points to sample in Bayesian updates.
 # Example Pareto fronts obtained by MAP and solutions obtained by baseline methods 
 <table>
   <tr>
