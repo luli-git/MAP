@@ -17,7 +17,7 @@
 conda env create -f environment.yaml
 conda activate map
 git clone https://github.com/mlfoundations/task_vectors # we used the zero-shot task vectors from this repo
-python run_MAP.py # check the args.py for the hyperparameters and 4 modes
+python run_MAP.py # check the args.py for the hyperparameters and 3 modes [map, bayesian, nested]
 ```
 # Example Pareto fronts obtained by MAP and solutions obtained by baseline methods 
 <table>
